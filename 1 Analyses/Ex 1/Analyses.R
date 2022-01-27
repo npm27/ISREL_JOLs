@@ -759,12 +759,69 @@ tapply(RECALL$Score, RECALL$type, mean, na.rm = T)
 output1 = ezANOVA(JOLS,
         dv = Score,
         between = type,
+        within = Direction,
         wid = Subject,
         type = 3,
         detailed = 3)
 
 output1$ANOVA$MSE = output1$ANOVA$SSd/output1$ANOVA$DFd
 output1$ANOVA$MSE
+
+aovEffectSize(output1, effectSize = "pes")
+
+output1
+
+tapply(JOLS$Score, list(JOLS$type, JOLS$Direction), mean)
+
+#t-tests
+#unrelated
+temp = t.test(jol.RL$U, jol.read$U, paired = F, p.adjust.methods = "Bonferroni", var.equal = T)
+p = round(temp$p.value, 3)
+t = temp$statistic
+SEM = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+#pbic
+pbic.t1 = jol.RL[ , c(1,5)]
+pbic.t1$task = rep("RL")
+
+pbic.t2 = jol.IS[ , c(1,5)]
+pbic.t2$task = rep("IS")
+
+pbic.t3 = rbind(pbic.t1, pbic.t2)
+
+ezANOVA(pbic.t3,
+        dv = U,
+        between = task,
+        detailed = T,
+        wid = Subject,
+        type = 3)
+
+##related
+temp = t.test(jol.RL$S, jol.read$S, paired = F, p.adjust.methods = "Bonferroni", var.equal = T)
+p = round(temp$p.value, 3)
+t = temp$statistic
+SEM = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+sd(jol.read$S)
+sd(jol.IS$S)
+
+##pbic
+pbic.t1 = jol.RL[ , c(1,4)]
+pbic.t1$task = rep("RL")
+
+pbic.t2 = jol.read[ , c(1,4)]
+pbic.t2$task = rep("read")
+
+pbic.t3 = rbind(pbic.t1, pbic.t2)
+
+ezANOVA(pbic.t3,
+        dv = S,
+        between = task,
+        detailed = T,
+        wid = Subject,
+        type = 3)
 
 ##Now do Recall
 RECALL2 = cast(RECALL, Subject ~ type, mean)
