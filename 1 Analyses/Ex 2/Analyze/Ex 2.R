@@ -22,7 +22,7 @@ dat$Scored = dat$Scored * 100 #get jols and recall on same scale
 summary(dat)
 
 #remove the NAs
-dat = na.omit(dat)ga
+dat = na.omit(dat)
 
 #get n
 length(unique(dat$Sub.ID)) #102
@@ -87,9 +87,33 @@ tapply(IS$Score, list(IS$measure, IS$Direction), mean) #item-specific
 tapply(RL$Score, list(RL$measure, RL$Direction), mean) #relational
 
 ####post-hocs####
-post.IS = cast(IS, Sub.ID ~ Direction, mean)
-post.READ = cast(READ, Sub.ID ~ Direction, mean)
-post.RL = cast(RL, Sub.ID ~ Direction, mean)
+##split by jol and recall
+#jol
+is.jol = subset(IS,
+                IS$measure == "JOL")
+rl.jol = subset(RL,
+                RL$measure == "JOL")
+read.jol = subset(READ,
+                  READ$measure == "JOL")
+
+#recall
+is.r = subset(IS,
+                IS$measure == "Recall")
+rl.r = subset(RL,
+                RL$measure == "Recall")
+read.r = subset(READ,
+                  READ$measure == "Recall")
+
+##Now make the post-hoc subsets
+#jol
+post.IS.jol = cast(is.jol, Sub.ID ~ Direction, mean)
+post.READ.jol = cast(read.jol, Sub.ID ~ Direction, mean)
+post.RL.jol = cast(rl.jol, Sub.ID ~ Direction, mean)
+
+#recall
+post.IS.r = cast(is.r, Sub.ID ~ Direction, mean)
+post.READ.r = cast(read.r, Sub.ID ~ Direction, mean)
+post.RL.r = cast(rl.r, Sub.ID ~ Direction, mean)
 
 ####t-tests####
 ###Just do the three-way for now
@@ -120,4 +144,56 @@ post.RL = cast(RL, Sub.ID ~ Direction, mean)
 
 #U
 
+####Get 95% CIs####
+###JOL
+##IS
+x = apply(post.IS.jol, 2, sd) 
+x / sqrt(length(unique(post.IS.jol$Sub.ID))) * 1.96
+
+##RL
+x = apply(post.RL.jol, 2, sd) 
+x / sqrt(length(unique(post.RL.jol$Sub.ID))) * 1.96
+
+##READ
+x = apply(post.READ.jol, 2, sd) 
+x / sqrt(length(unique(post.READ.jol$Sub.ID))) * 1.96
+
+###Recall
+##IS
+x = apply(post.IS.r, 2, sd) 
+x / sqrt(length(unique(post.IS.r$Sub.ID))) * 1.96
+
+##RL
+x = apply(post.RL.r, 2, sd) 
+x / sqrt(length(unique(post.RL.r$Sub.ID))) * 1.96
+
+##READ
+x = apply(post.READ.r, 2, sd) 
+x / sqrt(length(unique(post.READ.r$Sub.ID))) * 1.96
+
 ####get values for cohen's d####
+###JOL
+##IS
+apply(post.IS.jol, 2, mean) 
+apply(post.IS.jol, 2, sd) 
+
+##RL
+apply(post.RL.jol, 2, mean) 
+apply(post.RL.jol, 2, sd) 
+
+##READ
+apply(post.READ.jol, 2, mean) 
+apply(post.READ.jol, 2, sd)
+
+###RECALL
+##IS
+apply(post.IS.r, 2, mean) 
+apply(post.IS.r, 2, sd) 
+
+##RL
+apply(post.RL.r, 2, mean) 
+apply(post.RL.r, 2, sd) 
+
+##READ
+apply(post.READ.r, 2, mean) 
+apply(post.READ.r, 2, sd) 
