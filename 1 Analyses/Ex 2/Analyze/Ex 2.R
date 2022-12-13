@@ -197,3 +197,9 @@ apply(post.RL.r, 2, sd)
 ##READ
 apply(post.READ.r, 2, mean) 
 apply(post.READ.r, 2, sd) 
+
+####Calibration Plots####
+
+####Gamma####
+
+####Write data to file for plot####
