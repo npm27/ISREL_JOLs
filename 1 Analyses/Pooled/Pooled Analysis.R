@@ -88,8 +88,30 @@ ex1.jol2 = cast(ex1.jol, Subject ~ Direction, mean)
 ex2.jol2 = cast(ex2.jol, Subject ~ Direction, mean)
 
 ex1.r2 = cast(ex1.r, Subject ~ Direction, mean)
-ex2.rl2 = cast(ex2.r, Subject ~ Direction, mean)
+ex2.r2 = cast(ex2.r, Subject ~ Direction, mean)
 
 ###JOLS
 ##f
 t.test(ex1.jol2$F, ex2.jol2$F, var.equal = T, paired = F)
+
+##b
+t.test(ex1.jol2$B, ex2.jol2$B, var.equal = T, paired = F)
+
+##S
+t.test(ex1.jol2$S, ex2.jol2$S, var.equal = T, paired = F)
+
+##U
+t.test(ex1.jol2$U, ex2.jol2$U, var.equal = T, paired = F)
+
+###Recall
+##f
+t.test(ex1.r2$F, ex2.r2$F, var.equal = T, paired = F)
+
+##b
+t.test(ex1.r2$B, ex2.r2$B, var.equal = T, paired = F)
+
+##S
+t.test(ex1.r2$S, ex2.r2$S, var.equal = T, paired = F)
+
+##U
+t.test(ex1.r2$U, ex2.r2$U, var.equal = T, paired = F)
