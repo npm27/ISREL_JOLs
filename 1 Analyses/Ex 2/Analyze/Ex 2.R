@@ -68,6 +68,15 @@ model1 = ezANOVA(long.dat,
                  wid = Sub.ID,
                  type = 3,
                  detailed = T)
+model1
+
+
+#Get MSE here
+model1$ANOVA$MSE = model1$ANOVA$SSd/model1$ANOVA$DFd
+model1$ANOVA$MSE
+
+#now get partial eta
+aovEffectSize(model1, effectSize = "pes")
 
 #main effect of "measure" (diff between JOLs and recall is NS)
 tapply(long.dat$Score, long.dat$measure, mean)
@@ -116,33 +125,301 @@ post.READ.r = cast(read.r, Sub.ID ~ Direction, mean)
 post.RL.r = cast(rl.r, Sub.ID ~ Direction, mean)
 
 ####t-tests####
+##main effect of encoding group
+encoding_group = cast(long.dat, Sub.ID ~ Encoding, mean)
+
+##IS vs Read
+temp = t.test(encoding_group$IS, encoding_group$READ, paired = F, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##GET VALUES FOR COMPUTING COHEN'S D
+apply(encoding_group, 2, mean, na.rm = T)
+apply(encoding_group, 2, sd, na.rm = T)
+
+##main effect of pair direction
+pair_type = cast(long.dat, Sub.ID ~ Direction, mean)
+
+#F vs. S
+temp = t.test(pair_type$F, pair_type$S, paired = F, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##GET VALUES FOR COMPUTING COHEN'S D
+apply(pair_type, 2, mean, na.rm = T)
+apply(pair_type, 2, sd, na.rm = T)
+
+###Direction x Measure interaction
+jol_dat = subset(long.dat,
+                 long.dat$measure == "JOL")
+recall_dat = subset(long.dat,
+                    long.dat$measure == "Recall")
+
+jol2 = cast(jol_dat, Sub.ID ~ Direction, mean)
+recall2 = cast(recall_dat, Sub.ID ~ Direction, mean)
+
+##F
+temp = t.test(jol2$F, recall2$F, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##B
+temp = t.test(jol2$B, recall2$B, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##S
+temp = t.test(jol2$S, recall2$S, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##U
+temp = t.test(jol2$U, recall2$U, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##get pbic for symmetrical
+pbic1 = jol2[ , c(1, 4)]
+pbic2 = recall2[ , c(1 ,4)]
+
+pbic1$task = rep('jol')
+pbic2$task = rep('recall')
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Sub.ID,
+        dv = S,
+        within = task,
+        detailed = T,
+        type = 3)
+
+##Now get values for computing d
+apply(jol2, 2, mean, na.rm = T)
+apply(recall2, 2, mean, na.rm = T)
+
+apply(jol2, 2, sd, na.rm = T)
+apply(recall2, 2, sd, na.rm = T)
+
 ###Just do the three-way for now
-##Control
-#F
+##Backward
+#Read
+temp = t.test(post.READ.jol$B, post.READ.r$B, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
-#B
+#IS
+temp = t.test(post.IS.jol$B, post.IS.r$B, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
-#S
+#RL
+temp = t.test(post.RL.jol$B, post.RL.r$B, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 
 
-#U
+##read d
+mean(post.READ.jol$B); mean(post.READ.r$B)
+sd(post.READ.jol$B); sd(post.READ.r$B)
 
-##Item-specific
-#F
+##IS pbic
+pbic1 = post.IS.jol[ , c(1,2)]
+pbic2 = post.IS.r[ , c(1,2)]
 
-#B
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
 
-#S
+pbic3 = rbind(pbic1, pbic2)
 
-#U
+ezANOVA(pbic3,
+        dv = B,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
 
-##Relational
-#F
+##RL pbic
+pbic1 = post.RL.jol[ , c(1,2)]
+pbic2 = post.RL.r[ , c(1,2)]
 
-#B
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
 
-#S
+pbic3 = rbind(pbic1, pbic2)
 
-#U
+ezANOVA(pbic3,
+        dv = B,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
+
+##Forward
+#Read
+temp = t.test(post.READ.jol$F, post.READ.r$F, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+#IS
+temp = t.test(post.IS.jol$F, post.IS.r$F, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 #UNDER CONFIDENCE
+
+#RL
+temp = t.test(post.RL.jol$F, post.RL.r$F, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 
+
+#pbic read
+pbic1 = post.READ.jol[ , c(1,3)]
+pbic2 = post.READ.r[ , c(1,3)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = F,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
+
+#pbic rl
+pbic1 = post.RL.jol[ , c(1,3)]
+pbic2 = post.RL.r[ , c(1,3)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = F,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
+
+#d for is
+mean(post.IS.jol$F); mean(post.IS.r$F)
+sd(post.IS.jol$F); sd(post.IS.r$F)
+
+##Symmetrical
+#Read
+temp = t.test(post.READ.jol$S, post.READ.r$S, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+#IS
+temp = t.test(post.IS.jol$S, post.IS.r$S, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 #UNDER CONFIDENCE
+
+#RL
+temp = t.test(post.RL.jol$S, post.RL.r$S, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 
+
+#get d's
+mean(post.READ.jol$S); mean(post.READ.r$S)
+sd(post.READ.jol$S); sd(post.READ.r$S)
+
+mean(post.IS.jol$S); mean(post.IS.r$S)
+sd(post.IS.jol$S); sd(post.IS.r$S)
+
+#get pbic
+pbic1 = post.RL.jol[ , c(1,4)]
+pbic2 = post.RL.r[ , c(1,4)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = S,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
+
+
+##Unrelated
+#Read
+temp = t.test(post.READ.jol$U, post.READ.r$U, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+#IS
+temp = t.test(post.IS.jol$U, post.IS.r$U, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+#RL
+temp = t.test(post.RL.jol$U, post.RL.r$U, paired = T, p.adjust.methods = "bonferroni", var.equal = T)
+temp
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92 
+
+#get ds
+mean(post.READ.jol$U); mean(post.READ.r$U)
+sd(post.READ.jol$U); sd(post.READ.r$U)
+
+mean(post.IS.jol$U); mean(post.IS.r$U)
+sd(post.IS.jol$U); sd(post.IS.r$U)
+
+#PBIC
+pbic1 = post.RL.jol[ , c(1,5)]
+pbic2 = post.RL.r[ , c(1,5)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("recall")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = U,
+        wid = Sub.ID,
+        within = task,
+        type = 3,
+        detailed = T)
 
 ####Get 95% CIs####
 ###JOL
