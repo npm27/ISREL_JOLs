@@ -61,6 +61,11 @@ model1 = ezANOVA(combined.long,
                  detailed = T)
 model1
 
+model1$ANOVA$MSE = model1$ANOVA$SSd/model1$ANOVA$DFd
+model1$ANOVA$MSE
+
+aovEffectSize(model1, effectSize = "pes")
+
 ####T-test###
 ##break down the three-way (ex x direction x measure)
 tapply(combined.long$Score, list(combined.long$Measure, combined.long$Direction), mean)
@@ -92,26 +97,156 @@ ex2.r2 = cast(ex2.r, Subject ~ Direction, mean)
 
 ###JOLS
 ##f
-t.test(ex1.jol2$F, ex2.jol2$F, var.equal = T, paired = F)
+temp = t.test(ex1.jol2$F, ex2.jol2$F, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##b
-t.test(ex1.jol2$B, ex2.jol2$B, var.equal = T, paired = F)
+temp = t.test(ex1.jol2$B, ex2.jol2$B, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##S
-t.test(ex1.jol2$S, ex2.jol2$S, var.equal = T, paired = F)
+temp = t.test(ex1.jol2$S, ex2.jol2$S, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##U
-t.test(ex1.jol2$U, ex2.jol2$U, var.equal = T, paired = F)
+temp = t.test(ex1.jol2$U, ex2.jol2$U, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##get the pbics
+#f
+pbic1 = ex1.jol2[ , c(1, 3)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.jol2[ , c(1, 3)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = F,
+        detailed = T,
+        type = 3)
+#b
+pbic1 = ex1.jol2[ , c(1, 2)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.jol2[ , c(1, 2)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = B,
+        detailed = T,
+        type = 3)
+
+#S
+pbic1 = ex1.jol2[ , c(1, 4)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.jol2[ , c(1, 4)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = S,
+        detailed = T,
+        type = 3)
+
+#U
+pbic1 = ex1.jol2[ , c(1, 5)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.jol2[ , c(1, 5)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = U,
+        detailed = T,
+        type = 3)
 
 ###Recall
 ##f
-t.test(ex1.r2$F, ex2.r2$F, var.equal = T, paired = F)
+temp = t.test(ex1.r2$F, ex2.r2$F, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##b
-t.test(ex1.r2$B, ex2.r2$B, var.equal = T, paired = F)
+temp = t.test(ex1.r2$B, ex2.r2$B, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##S
-t.test(ex1.r2$S, ex2.r2$S, var.equal = T, paired = F)
+temp = t.test(ex1.r2$S, ex2.r2$S, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
 
 ##U
-t.test(ex1.r2$U, ex2.r2$U, var.equal = T, paired = F)
+temp = t.test(ex1.r2$U, ex2.r2$U, var.equal = T, paired = F)
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+##get values for d
+#b
+mean(ex1.r2$B); mean(ex2.r2$B)
+sd(ex1.r2$B); sd(ex2.r2$B)
+
+#u
+mean(ex1.r2$U); mean(ex2.r2$U)
+sd(ex1.r2$U); sd(ex2.r2$U)
+
+##get pbics
+#f
+pbic1 = ex1.r2[ , c(1, 3)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.r2[ , c(1, 3)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = F,
+        detailed = T,
+        type = 3)
+
+#s
+pbic1 = ex1.r2[ , c(1, 4)]
+pbic1$ex = rep("1")
+
+pbic2 = ex2.r2[ , c(1, 4)]
+pbic2$ex = rep("2")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        between = ex,
+        dv = S,
+        detailed = T,
+        type = 3)
