@@ -1405,3 +1405,22 @@ aovEffectSize(output_gamma, effectSize = "pes")
 tapply(gamma_ANOVA$g, gamma_ANOVA$group, mean)
 tapply(gamma_ANOVA$g, gamma_ANOVA$direction, mean)
 tapply(gamma_ANOVA$g, list(gamma_ANOVA$group, gamma_ANOVA$direction), mean) #interaction
+
+#Differ from zero?
+#read
+t.test(forward_READ$g)
+t.test(backward_READ$g)
+t.test(symmetrical_READ$g)
+t.test(Unrelated_READ$g)
+
+#IS
+t.test(forward_IS$g) #non-sig
+t.test(backward_IS$g) #non-sig
+t.test(symmetrical_IS$g) #non-sig
+t.test(Unrelated_IS$g)
+
+#RL
+t.test(forward_RL$g) 
+t.test(backward_RL$g) #non-sig
+t.test(symmetrical_RL$g) #non-sig
+t.test(Unrelated_RL$g) 

@@ -786,3 +786,22 @@ mean(forward_READ$g, na.rm = T)
 mean(backward_READ$g, na.rm = T)
 mean(symmetrical_READ$g, na.rm = T)
 mean(Unrelated_READ$g, na.rm = T)
+
+##Do the one way t-test
+#read
+t.test(forward_READ$g)
+t.test(backward_READ$g) #non-sig
+t.test(symmetrical_READ$g)
+t.test(Unrelated_READ$g)
+
+#IS
+t.test(forward_IS$g) #non-sig
+t.test(backward_IS$g) #non-sig
+t.test(symmetrical_IS$g)
+t.test(Unrelated_IS$g)
+
+#RL
+t.test(forward_RL$g) #non-sig
+t.test(backward_RL$g) #non-sig
+t.test(symmetrical_RL$g) #non-sig
+t.test(Unrelated_RL$g) #non-sig
