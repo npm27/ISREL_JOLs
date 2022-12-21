@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #read in the data
-dat = pd.read_csv("Ex 2 plot.csv")
+dat = pd.read_csv("Ex 1 plot.csv")
 
 #make the 95% confidence intervals
 dat['diff'] = dat['Upper'].sub(dat['Lower']) #get the length of the bars
@@ -83,7 +83,7 @@ rects2 = ax1.bar(ind + width/2 + .125, r1_average, width, yerr = r1_conf, capsiz
 
 
 ##Add labels, legend, and set tick marks
-ax1.set_title('Experiment 2: Item-Specific Group', fontsize = 16, pad = 15, fontweight = "bold")
+ax1.set_title('Experiment 1: Item-Specific Group', fontsize = 16, pad = 15, fontweight = "bold")
 ax1.set_ylabel('Mean % Recall', fontsize = 14, fontweight = "bold")
 ax1.set_xlabel('Pair Type', fontsize = 14, fontweight = "bold")
 ax1.xaxis.labelpad = 7.5
@@ -106,7 +106,7 @@ rects5 = ax2.bar(ind + width/2 + .125, r2_average, width, yerr = r2_conf, capsiz
 
 
 ##Add labels, legend, and set tick marks
-ax2.set_title('Experiment 2: Relational Group', fontsize = 16, pad = 15, fontweight = "bold")
+ax2.set_title('Experiment 1: Relational Group', fontsize = 16, pad = 15, fontweight = "bold")
 ax2.set_ylabel('Mean % Recall', fontsize = 14, fontweight = "bold")
 ax2.set_xlabel('Pair Type', fontsize = 14, fontweight = "bold")
 ax2.xaxis.labelpad = 7.5
@@ -129,7 +129,7 @@ rects8 = ax3.bar(ind + width/2 + .125, r3_average, width, yerr = r3_conf, capsiz
 
 
 ##Add labels, legend, and set tick marks
-ax3.set_title('Experiment 2: Read Group', fontsize = 16, pad = 15, fontweight = "bold")
+ax3.set_title('Experiment 1: Read Group', fontsize = 16, pad = 15, fontweight = "bold")
 ax3.set_ylabel('Mean % Recall', fontsize = 14, fontweight = "bold")
 ax3.set_xlabel('Pair Type', fontsize = 14, fontweight = "bold")
 ax3.xaxis.labelpad = 7.5
@@ -143,4 +143,4 @@ ax3.legend(frameon=False)
 #ax3.legend(bbox_to_anchor = (1.04, 0.5), loc = "center left", borderaxespad = 0, fontsize = 12)
 ax3.set_ylim([0,100])
 
-ex1_fig.savefig('EX2.jpg', dip = 10000)
+ex1_fig.savefig('EX1.jpg', dip = 10000)
