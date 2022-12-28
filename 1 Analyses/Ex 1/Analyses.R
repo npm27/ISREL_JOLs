@@ -248,6 +248,67 @@ anova_recall = subset(anova_data,
 anova_jol = subset(anova_data,
                    anova_data$Task == "JOL")
 
+##break down the task x direction 2-way
+jol2 = cast(anova_jol, Subject ~ Direction, mean)
+recall2 = cast(anova_recall, Subject ~ Direction, mean)
+
+#do some t-tests
+#F
+temp = t.test(jol2$F, recall2$F, paired = T, p.adjust.methods = "Bonferroni")
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+pbic1 = jol2[ , c(1, 3)]
+pbic2 = recall2[ , c(1, 3)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("r")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        dv = F,
+        within = task,
+        detailed = T)
+
+#S
+temp = t.test(jol2$S, recall2$S, paired = T, p.adjust.methods = "Bonferroni")
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+pbic1 = jol2[ , c(1, 4)]
+pbic2 = recall2[ , c(1, 4)]
+
+pbic1$task = rep("jol")
+pbic2$task = rep("r")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = Subject,
+        dv = S,
+        within = task,
+        detailed = T)
+
+#B
+temp = t.test(jol2$B, recall2$B, paired = T, p.adjust.methods = "Bonferroni")
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+sd(jol2$B); sd(recall2$B)
+
+#U
+temp = t.test(jol2$U, recall2$U, paired = T, p.adjust.methods = "Bonferroni")
+round(temp$p.value, 3)
+temp$statistic
+(temp$conf.int[2] - temp$conf.int[1]) / 3.92
+
+sd(jol2$U); sd(recall2$U)
+
 #Three-way output
 tapply(anova_recall$Score,
        list(anova_recall$type, anova_recall$Direction), mean)
@@ -1405,6 +1466,155 @@ aovEffectSize(output_gamma, effectSize = "pes")
 tapply(gamma_ANOVA$g, gamma_ANOVA$group, mean)
 tapply(gamma_ANOVA$g, gamma_ANOVA$direction, mean)
 tapply(gamma_ANOVA$g, list(gamma_ANOVA$group, gamma_ANOVA$direction), mean) #interaction
+
+##t tests
+#get data in right shape
+gamma.rl = subset(gamma_ANOVA,
+                  gamma_ANOVA$group == "RL")
+gamma.is = subset(gamma_ANOVA,
+                  gamma_ANOVA$group == "IS")
+gamma.read = subset(gamma_ANOVA,
+                    gamma_ANOVA$group == "READ")
+
+gamma.rl2 = cast(gamma.rl[ , c(1,3,4,2)], i ~ direction, mean)
+gamma.is2 = cast(gamma.is[ , c(1,3,4,2)], i ~ direction, mean)
+gamma.read2 = cast(gamma.read[ , c(1,3,4,2)], i ~ direction, mean)
+
+#forward
+temp = t.test(gamma.rl2$F, gamma.is2$F, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = gamma.rl2[ , c(1, 3)]
+pbic2 = gamma.is2[ , c(1, 3)]
+
+pbic1$task = rep("rl")
+pbic2$task = rep("is")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = F,
+        wid = i,
+        between = task,
+        detailed = T)
+
+temp = t.test(gamma.rl2$F, gamma.read2$F, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.is2$F, gamma.read2$F, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+sd(gamma.is2$F); sd(gamma.read2$F)
+
+#backward
+temp = t.test(gamma.rl2$B, gamma.is2$B, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.rl2$B, gamma.read2$B, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+sd(gamma.rl2$B); sd(gamma.read2$B)
+
+temp = t.test(gamma.is2$B, gamma.read2$B, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = gamma.is2[ , c(1, 2)]
+pbic2 = gamma.read2[ , c(1, 2)]
+
+pbic1$task = rep("is")
+pbic2$task = rep("read")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = B,
+        wid = i,
+        between = task,
+        detailed = T)
+
+#symmetrical
+temp = t.test(gamma.rl2$S, gamma.is2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.rl2$S, gamma.read2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.is2$S, gamma.read2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = gamma.rl2[ , c(1, 4)]
+pbic2 = gamma.read2[ , c(1, 4)]
+
+pbic1$task = rep("is")
+pbic2$task = rep("read")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = S,
+        wid = i,
+        between = task,
+        detailed = T)
+
+#unrelated
+temp = t.test(gamma.rl2$U, gamma.is2$U, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.rl2$U, gamma.read2$U, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(gamma.is2$U, gamma.read2$U, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = gamma.rl2[ , c(1, 5)]
+pbic2 = gamma.is2[ , c(1, 5)]
+
+pbic1$task = rep("rl")
+pbic2$task = rep("is")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        dv = U,
+        wid = i,
+        between = task,
+        detailed = T)
 
 #Differ from zero?
 #read

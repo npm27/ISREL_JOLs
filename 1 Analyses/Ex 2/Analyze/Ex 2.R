@@ -805,3 +805,203 @@ t.test(forward_RL$g) #non-sig
 t.test(backward_RL$g) #non-sig
 t.test(symmetrical_RL$g) #non-sig
 t.test(Unrelated_RL$g) #non-sig
+
+##GET CIs for table
+(sd(forward_RL$g, na.rm = T) / sqrt(nrow(forward_RL))) * 1.96
+(sd(forward_READ$g, na.rm = T) / sqrt(nrow(forward_READ))) * 1.96
+(sd(forward_IS$g, na.rm = T) / sqrt(nrow(forward_IS))) * 1.96
+
+(sd(backward_RL$g, na.rm = T) / sqrt(nrow(backward_RL))) * 1.96
+(sd(backward_READ$g, na.rm = T) / sqrt(nrow(backward_READ))) * 1.96
+(sd(backward_IS$g, na.rm = T) / sqrt(nrow(backward_IS))) * 1.96
+
+(sd(symmetrical_RL$g, na.rm = T) / sqrt(nrow(symmetrical_RL))) * 1.96
+(sd(symmetrical_READ$g, na.rm = T) / sqrt(nrow(symmetrical_READ))) * 1.96
+(sd(symmetrical_IS$g, na.rm = T) / sqrt(nrow(symmetrical_IS))) * 1.96
+
+(sd(Unrelated_RL$g, na.rm = T) / sqrt(nrow(Unrelated_RL))) * 1.96
+(sd(Unrelated_READ$g, na.rm = T) / sqrt(nrow(Unrelated_READ))) * 1.96
+(sd(Unrelated_IS$g, na.rm = T) / sqrt(nrow(Unrelated_IS))) * 1.96
+
+##ANOVA and T-TESTS
+####Set up for Gamma ANOVA####
+##IS
+forward_IS$group = rep("IS")
+forward_IS$direction = rep("F")
+
+backward_IS$group = rep("IS")
+backward_IS$direction = rep("B")
+
+symmetrical_IS$group = rep("IS")
+symmetrical_IS$direction = rep("S")
+
+Unrelated_IS$group = rep("IS")
+Unrelated_IS$direction = rep("U")
+
+##rl
+forward_RL$group = rep("RL")
+forward_RL$direction = rep("F")
+
+backward_RL$group = rep("RL")
+backward_RL$direction = rep("B")
+
+symmetrical_RL$group = rep("RL")
+symmetrical_RL$direction = rep("S")
+
+Unrelated_RL$group = rep("RL")
+Unrelated_RL$direction = rep("U")
+
+##read
+forward_READ$group = rep("READ")
+forward_READ$direction = rep("F")
+
+backward_READ$group = rep("READ")
+backward_READ$direction = rep("B")
+
+symmetrical_READ$group = rep("READ")
+symmetrical_READ$direction = rep("S")
+
+Unrelated_READ$group = rep("READ")
+Unrelated_READ$direction = rep("U")
+
+##Now combine
+gamma_ANOVA = rbind(forward_IS, forward_READ, forward_RL,
+                    backward_IS, backward_READ, backward_RL,
+                    symmetrical_IS, symmetrical_READ, symmetrical_RL,
+                    Unrelated_IS, Unrelated_READ, Unrelated_RL)
+
+#get rid of nan's
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+
+gamma_ANOVA[is.nan(gamma_ANOVA)] <- 0
+
+gamma_ANOVA$i = as.character(gamma_ANOVA$i)
+
+
+##Okay, anova time!
+output_gamma = ezANOVA(gamma_ANOVA,
+                       within = direction,
+                       between = group,
+                       wid = i,
+                       dv = g,
+                       type = 3,
+                       detailed = T)
+
+output_gamma$ANOVA$MSE = output_gamma$ANOVA$SSd/output_gamma$ANOVA$DFd
+output_gamma$ANOVA$MSE
+
+aovEffectSize(output_gamma, effectSize = "pes")
+
+tapply(gamma_ANOVA$g, gamma_ANOVA$group, mean)
+tapply(gamma_ANOVA$g, gamma_ANOVA$direction, mean)
+tapply(gamma_ANOVA$g, list(gamma_ANOVA$group, gamma_ANOVA$direction), mean) #interaction
+
+#break down effect of group
+group1 = cast(gamma_ANOVA[ , c(1,3,4,2)], i ~ group, mean)
+
+temp = t.test(group1$READ, group1$IS, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(group1$RL, group1$IS, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = group1[ , c(1, 2)]
+pbic2 = group1[ , c( 1, 4)]
+
+colnames(pbic1)[2] = "score"
+colnames(pbic2)[2] = "score"
+
+pbic1$task = rep("IS")
+pbic2$task = rep("RL")
+
+pbic3 = rbind(pbic1, pbic2)
+pbic3 = na.omit(pbic3)
+
+ezANOVA(pbic3,
+        dv = score,
+        wid = i,
+        between = task,
+        detailed = T)
+
+temp = t.test(group1$READ, group1$RL, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+sd(group1$READ, na.rm = T); sd(group1$RL, na.rm = T)
+
+##effect of pair type
+group2 = cast(gamma_ANOVA[ , c(1,3,4,2)], i ~ direction, mean)
+
+#f
+temp = t.test(group2$F, group2$B, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+pbic1 = group2[ , c(1, 3)]
+pbic2 = group2[ , c(1, 2)]
+
+colnames(pbic1)[2] = "direction"
+colnames(pbic2)[2] = "direction"
+
+pbic1$thing = rep("F")
+pbic2$thing = rep("B")
+
+pbic3 = rbind(pbic1, pbic2)
+
+ezANOVA(pbic3,
+        wid = i,
+        dv = direction,
+        within = thing,
+        detailed = T)
+
+temp = t.test(group2$F, group2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(group2$F, group2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(group2$F, group2$U, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+#b
+temp = t.test(group2$B, group2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+temp = t.test(group2$B, group2$U, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
+
+sd(group2$S)
+sd(group2$B)
+
+#S
+temp = t.test(group2$U, group2$S, paired = F, var.equal = T, p.adjust.methods = "Bonferroni")
+p1 = round(temp$p.value, 3)
+t1 = temp$statistic
+SEM1 = (temp$conf.int[2] - temp$conf.int[1]) / 3.92
+temp
