@@ -1448,6 +1448,7 @@ gamma_ANOVA[is.nan(gamma_ANOVA)] <- 0
 
 gamma_ANOVA$i = as.character(gamma_ANOVA$i)
 
+#write.csv(gamma_ANOVA, file = "gammas_ex1.csv", row.names = F)
 
 ##Okay, anova time!
 output_gamma = ezANOVA(gamma_ANOVA,
