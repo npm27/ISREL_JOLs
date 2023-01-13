@@ -195,6 +195,30 @@ output1$ANOVA$MSE
 
 aovEffectSize(output1, effectSize = "pes")
 
+anova_data.r = subset(anova_data,
+                      anova_data$Task == "Recall")
+anova_data.j = subset(anova_data,
+                      anova_data$Task == "JOL")
+
+ezANOVA(data = anova_data.r,
+        wid = Subject,
+        between = type,
+        within = Direction,
+        dv = Score,
+        type = 3,
+        return_aov = T,
+        detailed = T)
+
+ezANOVA(data = anova_data.j,
+        wid = Subject,
+        between = type,
+        within = Direction,
+        dv = Score,
+        type = 3,
+        return_aov = T,
+        detailed = T)
+
+
 length(unique(anova_data$Subject))
 
 
