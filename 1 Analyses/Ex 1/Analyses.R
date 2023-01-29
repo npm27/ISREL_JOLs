@@ -200,7 +200,22 @@ anova_data.r = subset(anova_data,
 anova_data.j = subset(anova_data,
                       anova_data$Task == "JOL")
 
-ezANOVA(data = anova_data.r,
+out2 = ezANOVA(data = anova_data.r,
+        wid = Subject,
+        between = type,
+        within = Direction,
+        dv = Score,
+        type = 3,
+        return_aov = T,
+        detailed = T)
+out2
+
+out2$ANOVA$MSE = out2$ANOVA$SSd/out2$ANOVA$DFd
+out2$ANOVA$MSE
+
+aovEffectSize(out2, effectSize = "pes")
+
+out3 = ezANOVA(data = anova_data.j,
         wid = Subject,
         between = type,
         within = Direction,
@@ -209,15 +224,9 @@ ezANOVA(data = anova_data.r,
         return_aov = T,
         detailed = T)
 
-ezANOVA(data = anova_data.j,
-        wid = Subject,
-        between = type,
-        within = Direction,
-        dv = Score,
-        type = 3,
-        return_aov = T,
-        detailed = T)
+out3
 
+aovEffectSize(out3, effectSize = "pes")
 
 length(unique(anova_data$Subject))
 
@@ -829,7 +838,7 @@ tapply(block2.recall$Score, list(block2.recall$type, block2.recall$Direction), m
 ##Do some t-tests
 
 
-####Do that other analysis Mark wants because he's never satisfied####
+####Do that other analysis####
 JOLS = subset(anova_data,
               anova_data$Task == "JOL")
 RECALL = subset(anova_data,
