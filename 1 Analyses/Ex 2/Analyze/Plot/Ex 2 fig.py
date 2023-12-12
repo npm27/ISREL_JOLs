@@ -102,7 +102,7 @@ rects4 = ax2.bar(ind - width/2 + .125, j2_average, width, yerr = j2_conf, capsiz
                 label ='JOL')
 
 rects5 = ax2.bar(ind + width/2 + .125, r2_average, width, yerr = r2_conf, capsize = 3, color = 'gray', edgecolor = 'k',
-                label = 'Frequency')
+                label = 'Recall')
 
 
 ##Add labels, legend, and set tick marks
@@ -125,7 +125,7 @@ rects7 = ax3.bar(ind - width/2 + .125, j3_average, width, yerr = j3_conf, capsiz
                 label ='JOL')
 
 rects8 = ax3.bar(ind + width/2 + .125, r3_average, width, yerr = r3_conf, capsize = 3, color = 'gray', edgecolor = 'k',
-                label = 'Frequency')
+                label = 'Recall')
 
 
 ##Add labels, legend, and set tick marks
@@ -143,4 +143,4 @@ ax3.legend(frameon=False)
 #ax3.legend(bbox_to_anchor = (1.04, 0.5), loc = "center left", borderaxespad = 0, fontsize = 12)
 ax3.set_ylim([0,100])
 
-ex1_fig.savefig('EX2.jpg', dip = 10000)
+#ex1_fig.savefig('EX2.jpg', dip = 10000)
